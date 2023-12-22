@@ -1,0 +1,28 @@
+---
+title: "Research Data Collection"
+output:
+  word_document: default
+  html_document: default
+date: "2023-12-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1. Read in data txt file
+
+2. make table from the data within the file
+
+3. remove rows with missing data
+
+4. go about plotting VGRF
+
+
+
+
+
+
+
+
