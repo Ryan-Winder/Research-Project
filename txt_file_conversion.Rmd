@@ -1,0 +1,60 @@
+---
+title: "Research Data Collection"
+output:
+  word_document: default
+  html_document: default
+date: "2023-12-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Desc: Take in a txt file and convert it into a data table
+# Parameter: f - the path/file name
+# Output: A data frame
+table_function <- function(f) {
+  
+  # read in file
+  read.file <- readLines(f)
+  
+  # Skip the first 8 lines
+  unclean_data <- read.file[7:length(read.file)]
+
+  # clean the data
+  cleaned_data <- unclean_data %>%
+    gsub("\t", " ", .) %>%  # remove "\t" from file
+    gsub("Sample #", "Sample_#", .) %>%  # fix first column name
+    gsub("\\s+$", "", .)  # remove the space at the end of every row
+    
+  # data without the column names in the first row
+  finished_data <- cleaned_data[-1]
+  
+  # create the data 
+  converted_table <- data.frame(matrix(unlist(strsplit(finished_data, " ")), ncol = length(strsplit(finished_data[1], " ")[[1]]), byrow = TRUE))
+
+  # Assign column names
+  colnames(converted_table) <- strsplit(cleaned_data[1], " ")[[1]]
+
+  # convert the columns to be of type dbl rather than chr
+  converted_table[,c(1:10)] <- sapply(converted_table[, c(1:10)], as.numeric)
+  
+  return(converted_table)
+}
+```
+
+
+```{r}
+# example
+table1 <- table_function("P022__1__[321-15-48-4] - vGRF.txt")
+table2 <- table_function("P022__2__[321-15-48-42] - vGRF.txt")
+head(table1)
+head(table2)
+```
+
+
+
+
+
