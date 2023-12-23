@@ -12,12 +12,53 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 1. Read in data txt file
+2. clean up the data
+3. make a data table from the data within the file
+```{r}
+# read in txt file
+full.file <- readLines("P022__1__[321-15-48-4] - vGRF.txt")
 
-2. make table from the data within the file
+# txt file is tab-delimited (filled with \t where there are spaces in the file)
+full.file[1:15] 
 
-3. remove rows with missing data
+# Skip the first 8 lines
+beginning_data <- full.file[7:length(full.file)]
+beginning_data[1:10]
+
+# replace all \t with a space
+seperated_data <- gsub("\t", " ", beginning_data)
+seperated_data[1:10]
+
+modified_data <- seperated_data %>%
+  gsub("Sample #", "Sample_#", .) %>%  # fix the "sample #" by converting to "sample_#" to avoid issues with number of columns
+  gsub("\\s+$", "", .)  # remove the space at the end of every row
+
+head(modified_data)
+
+# data without the column names in the first row
+finished_data <- modified_data[-1]
+head(finished_data)
+
+# create a data frame from the cleaned up data
+data_frame <- data.frame(matrix(unlist(strsplit(finished_data, " ")), ncol = length(strsplit(finished_data[1], " ")[[1]]), byrow = TRUE))
+
+# Assign column names
+colnames(data_frame) <- strsplit(modified_data[1], " ")[[1]]
+
+# a look at the data frame
+head(data_frame)
+
+# convert the columns to be of type dbl rather than chr
+data_frame[,c(1:10)] <- sapply(data_frame[, c(1:10)], as.numeric)
+
+head(data_frame)
+```
+
 
 4. go about plotting VGRF
+```{r}
+
+```
 
 
 
