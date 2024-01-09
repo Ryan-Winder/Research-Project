@@ -12,6 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+# load libraries
+library(tidyverse)
+library(magrittr)
+
 # Desc: Take in a txt file and convert it into a data table
 # Parameter: f - the path/file name
 # Output: A data frame
@@ -39,22 +43,69 @@ table_function <- function(f) {
   colnames(converted_table) <- strsplit(cleaned_data[1], " ")[[1]]
 
   # convert the columns to be of type dbl rather than chr
-  converted_table[,c(1:10)] <- sapply(converted_table[, c(1:10)], as.numeric)
+  converted_table[,c(1:ncol(converted_table))] <- sapply(converted_table[, c(1:ncol(converted_table))], as.numeric)
   
   return(converted_table)
 }
 ```
 
-
 ```{r}
-# example
-table1 <- table_function("P022__1__[321-15-48-4] - vGRF.txt")
-table2 <- table_function("P022__2__[321-15-48-42] - vGRF.txt")
+# examples
+table1 <- table_function(paste("./all_files/", "P022__1__[321-15-48-4] - vGRF.txt", sep = ""))
+table2 <- table_function(paste("./all_files/", "P022__2__[321-15-48-42] - vGRF.txt", sep = ""))
 head(table1)
 head(table2)
+table6 <- table_function(paste("./all_files/", "P022__6__[321-15-53-46] - vGRF.txt", sep = ""))
+head(table6)
 ```
 
 
+
+```{r include_files, echo=FALSE, eval=TRUE}
+# source in the .Rmd file holding the file names
+knitr::read_chunk("files.Rmd")
+
+# Desc: take in all txt files and convert to data frames and store in specified folders
+# Parameters: x -> the files, n -> the names for the renamed files, folder -> the folders to store the data tables
+# Output: No output
+write.tables <- function(x, n, folder) {
+  # placeholder for the number of individuals
+  j <- 1
+  # number of individuals
+  len.individuals <- length(x)
+  # loop through the files
+  while(j <= len.individuals) {
+      # placeholder for the number of files on the individuals
+      i <- 1
+      # number of files on the individual
+      len.files <- length(x[[j]])
+      while(i <= len.files) {
+        # find the file and call the table function from above
+        table <- table_function(paste("./all_files/", x[[j]][i], sep = ""))
+        # make the title of the file
+        title <- paste(n[j], i, sep = "")
+        # write the file to the specified folder
+        write.csv(table, file = file.path(folder[j], title), row.names = TRUE)
+        # increment i
+        i <- i + 1
+      }
+      # increment j
+      j <- j + 1
+  }
+}
+
+# vector holding all of the files to convert
+all_files <- list(files_P022,files_P023,files_P024,files_P025,files_P026,files_P027,files_P028,files_P029,files_P030)
+
+# vector holding all of the names to title the transformed files
+names <- c("P022-","P023-","P024-","P025-","P026-","P027-","P028-","P029-","P030-")
+
+# vector holding all of the file names to save the datatables to
+folders <- c("P022-tables","P023-tables","P024-tables","P025-tables","P026-tables","P027-tables","P028-tables","P029-tables","P030-tables")
+
+# call the write.tables function to convert all the files
+write.tables(all_files, names, folders)
+```
 
 
 

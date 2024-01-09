@@ -29,6 +29,10 @@ beginning_data[1:10]
 seperated_data <- gsub("\t", " ", beginning_data)
 seperated_data[1:10]
 
+# load libraries
+library(tidyverse)
+library(magrittr)
+
 modified_data <- seperated_data %>%
   gsub("Sample #", "Sample_#", .) %>%  # fix the "sample #" by converting to "sample_#" to avoid issues with number of columns
   gsub("\\s+$", "", .)  # remove the space at the end of every row
@@ -56,11 +60,13 @@ head(data_frame)
 
 
 4. go about plotting VGRF
-```{r}
+```{r, warning=FALSE}
+# attach column names
+attach(data_frame)
 
+plot(`Sample_#`, Right_X, type = "l", lwd = 2, col = "blue")
+points(Right_Y, type = "l", lwd = 2, col = "red", add = TRUE)
 ```
-
-
 
 
 
